@@ -21,19 +21,19 @@ import {
 } from "@/constants/storage-key";
 import { useNavigate } from "@tanstack/react-router";
 import { PAGE_ROUTES } from "@/constants/page-routes";
+import type { OmrOptionsSchema } from "@/types/omr-options";
 
 export function OmrOptionForm() {
   const storageOptions = window.localStorage.getItem(
     LOCAL_STORAGE_KEY.DEFAULT_OPTIONS,
   );
-  const defaultOptions: Omit<OmrOptionFormSchema, "saveAsDefault"> =
-    storageOptions
-      ? JSON.parse(storageOptions)
-      : {
-          timeLimit: 60,
-          numberOfQuestions: 40,
-          numberOfAnswers: 5,
-        };
+  const defaultOptions: OmrOptionsSchema = storageOptions
+    ? JSON.parse(storageOptions)
+    : {
+        timeLimit: 60,
+        numberOfQuestions: 40,
+        numberOfAnswers: 5,
+      };
 
   const navigate = useNavigate();
 
@@ -128,7 +128,7 @@ export function OmrOptionForm() {
         </select>
       </fieldset>
 
-      <button type="submit" className="btn btn-md mt-2">
+      <button type="submit" className="btn btn-primary btn-md mt-2">
         Start
       </button>
 
