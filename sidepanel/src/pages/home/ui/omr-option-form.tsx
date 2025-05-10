@@ -1,17 +1,26 @@
-import { CircleHelp, Info, Timer } from "lucide-react";
+import { Hash, Info, Timer } from "lucide-react";
 
 import {
   DEFAULT_NUMBER_OF_ANSWER_OPTION,
   NUMBER_OF_ANSWER_OPTIONS,
 } from "@/constants/omr-options";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import {
+  useForm,
+  type SubmitErrorHandler,
+  type SubmitHandler,
+} from "react-hook-form";
 import {
   omrOptionFormSchema,
   type OmrOptionFormSchema,
 } from "../types/omr-option-form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { LOCAL_STORAGE_KEY } from "@/constants/storage-key";
+import {
+  LOCAL_STORAGE_KEY,
+  SESSION_STORAGE_KEY,
+} from "@/constants/storage-key";
+import { useNavigate } from "@tanstack/react-router";
+import { PAGE_ROUTES } from "@/constants/page-routes";
 
 export function OmrOptionForm() {
   const storageOptions = window.localStorage.getItem(
@@ -25,6 +34,8 @@ export function OmrOptionForm() {
           numberOfQuestions: 40,
           numberOfAnswers: 5,
         };
+
+  const navigate = useNavigate();
 
   const { register, handleSubmit } = useForm<OmrOptionFormSchema>({
     resolver: zodResolver(omrOptionFormSchema),
@@ -40,31 +51,43 @@ export function OmrOptionForm() {
     numberOfAnswers,
     numberOfQuestions,
   }) => {
+    const options = JSON.stringify({
+      timeLimit,
+      numberOfAnswers,
+      numberOfQuestions,
+    });
+
     if (saveAsDefault) {
-      const options = JSON.stringify({
-        timeLimit,
-        numberOfAnswers,
-        numberOfQuestions,
-      });
       window.localStorage.setItem(LOCAL_STORAGE_KEY.DEFAULT_OPTIONS, options);
     }
 
+    window.sessionStorage.setItem(SESSION_STORAGE_KEY.OMR_OPTIONS, options);
+    navigate({ to: PAGE_ROUTES.OMR });
     toast.success("Testing has begun! Good luck 🍀");
+  };
+
+  const handleSubmitError: SubmitErrorHandler<OmrOptionFormSchema> = (
+    error,
+  ) => {
+    const errorText = Object.values(error)[0]?.message;
+
+    if (errorText) {
+      toast.error(errorText);
+    }
   };
 
   return (
     <form
       className="flex w-full flex-col gap-3"
-      onSubmit={handleSubmit(submitForm)}
+      onSubmit={handleSubmit(submitForm, handleSubmitError)}
     >
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Time Limit (Minutes)</legend>
-        <label className="input validator w-full">
+        <label className="input w-full">
           <Timer className="size-4 opacity-50" />
           <input
             {...register("timeLimit", { valueAsNumber: true })}
             type="number"
-            required
             placeholder="Type minutes"
             min="1"
             max="720"
@@ -75,12 +98,11 @@ export function OmrOptionForm() {
 
       <fieldset className="fieldset">
         <legend className="fieldset-legend">Number of Questions</legend>
-        <label className="input validator w-full">
-          <CircleHelp className="size-4 opacity-50" />
+        <label className="input w-full">
+          <Hash className="size-4 opacity-50" />
           <input
             {...register("numberOfQuestions", { valueAsNumber: true })}
             type="number"
-            required
             placeholder="Type a number between 1 to 100"
             min="1"
             max="100"
