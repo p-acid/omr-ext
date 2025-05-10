@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "OMR",
+  "version": "1.0.0",
+  "description": "OMR card simulator in web extensions",
+  "permissions": ["sidePanel"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Open OMR Card"
+  }
+}
