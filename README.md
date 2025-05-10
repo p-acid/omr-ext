@@ -1,1 +1,3 @@
-# omr-ext
+# OMR Simulator
+
+![thumbnail](./assets/thumbnail.png)
