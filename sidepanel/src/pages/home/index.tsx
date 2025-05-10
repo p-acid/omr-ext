@@ -9,6 +9,7 @@ export function Home() {
           Select options for using simulator
         </p>
       </div>
+
       <OmrOptionForm />
     </main>
   );

@@ -11,19 +11,43 @@ import {
 } from "../types/omr-option-form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { LOCAL_STORAGE_KEY } from "@/constants/storage-key";
 
 export function OmrOptionForm() {
+  const storageOptions = window.localStorage.getItem(
+    LOCAL_STORAGE_KEY.DEFAULT_OPTIONS,
+  );
+  const defaultOptions: Omit<OmrOptionFormSchema, "saveAsDefault"> =
+    storageOptions
+      ? JSON.parse(storageOptions)
+      : {
+          timeLimit: 60,
+          numberOfQuestions: 40,
+          numberOfAnswers: 5,
+        };
+
   const { register, handleSubmit } = useForm<OmrOptionFormSchema>({
     resolver: zodResolver(omrOptionFormSchema),
     defaultValues: {
-      timeLimit: 60,
-      numberOfQuestions: 40,
-      numberOfAnwers: 5,
+      ...defaultOptions,
+      saveAsDefault: false,
     },
   });
 
-  const submitForm: SubmitHandler<OmrOptionFormSchema> = (value) => {
-    console.log(value);
+  const submitForm: SubmitHandler<OmrOptionFormSchema> = ({
+    saveAsDefault,
+    timeLimit,
+    numberOfAnswers,
+    numberOfQuestions,
+  }) => {
+    if (saveAsDefault) {
+      const options = JSON.stringify({
+        timeLimit,
+        numberOfAnswers,
+        numberOfQuestions,
+      });
+      window.localStorage.setItem(LOCAL_STORAGE_KEY.DEFAULT_OPTIONS, options);
+    }
 
     toast.success("Testing has begun! Good luck 🍀");
   };
@@ -69,7 +93,7 @@ export function OmrOptionForm() {
         <legend className="fieldset-legend">Number of Answers</legend>
 
         <select
-          {...register("numberOfAnwers", { valueAsNumber: true })}
+          {...register("numberOfAnswers", { valueAsNumber: true })}
           defaultValue={DEFAULT_NUMBER_OF_ANSWER_OPTION.value}
           className="select w-full"
         >
@@ -88,9 +112,9 @@ export function OmrOptionForm() {
 
       <label className="label mt-3 gap-2 text-sm">
         <input
+          {...register("saveAsDefault")}
           type="checkbox"
-          defaultChecked
-          className="checkbox checkbox-sm"
+          className="checkbox checkbox-xs"
         />
         Save as default
         <div

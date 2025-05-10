@@ -3,7 +3,7 @@ import { Toaster } from "sonner";
 
 import { Home } from "@/pages/home";
 import { Omr } from "@/pages/omr";
-import { pageRoutes } from "@/constants/page-routes";
+import { PAGE_ROUTES } from "@/constants/page-routes";
 
 const root = createRootRoute({
   component: () => (
@@ -16,13 +16,13 @@ const root = createRootRoute({
 
 const home = createRoute({
   getParentRoute: () => root,
-  path: pageRoutes.home,
+  path: PAGE_ROUTES.HOME,
   component: Home,
 });
 
 const omr = createRoute({
   getParentRoute: () => root,
-  path: pageRoutes.omr,
+  path: PAGE_ROUTES.OMR,
   component: Omr,
 });
 
