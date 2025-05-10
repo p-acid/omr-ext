@@ -1,11 +1,17 @@
 import { createRootRoute, createRoute, Outlet } from "@tanstack/react-router";
+import { Toaster } from "sonner";
 
 import { Home } from "@/pages/home";
 import { Omr } from "@/pages/omr";
 import { pageRoutes } from "@/constants/page-routes";
 
 const root = createRootRoute({
-  component: Outlet,
+  component: () => (
+    <>
+      <Outlet />
+      <Toaster theme="system" position="bottom-center" />
+    </>
+  ),
 });
 
 const home = createRoute({
