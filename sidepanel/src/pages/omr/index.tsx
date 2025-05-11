@@ -16,10 +16,9 @@ export function Omr() {
   if (!sessionOptions) {
     redirect({ to: PAGE_ROUTES.HOME });
     toast.error("You need to set OMR options.");
-    return;
   }
 
-  const omrOptions: OmrOptionsSchema = JSON.parse(sessionOptions);
+  const omrOptions: OmrOptionsSchema = JSON.parse(sessionOptions as string);
 
   const initialTime = {
     hours: Math.floor(omrOptions.timeLimit / 60),
@@ -33,8 +32,8 @@ export function Omr() {
         <Timer initialTime={initialTime} />
       </div>
       <OmrCard
-        numberAsQuestions={omrOptions.numberOfQuestions}
-        numberAsAnswers={omrOptions.numberOfAnswers}
+        numberOfQuestions={omrOptions.numberOfQuestions}
+        numberOfAnswers={omrOptions.numberOfAnswers}
       />
     </main>
   );
