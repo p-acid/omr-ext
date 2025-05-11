@@ -36,7 +36,6 @@ export function Omr() {
         numberAsQuestions={omrOptions.numberOfQuestions}
         numberAsAnswers={omrOptions.numberOfAnswers}
       />
-      <button className="btn btn-md btn-primary w-48">Submit</button>
     </main>
   );
 }
