@@ -1,68 +1,21 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 
-type Time = {
-  hours: number;
-  minutes: number;
-  seconds: number;
-};
+import type { Time } from "@/types/time";
 
-interface TimerProps {
-  initialTime: Partial<Time>;
-}
+type TimerProps = Time;
 
-export function Timer({ initialTime }: TimerProps) {
-  const [counter, setCounter] = useState<Time>({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    ...initialTime,
-  });
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCounter((prev) => {
-        let { hours, minutes, seconds } = prev;
-
-        if (hours === 0 && minutes === 0 && seconds === 0) {
-          clearInterval(interval);
-          return prev;
-        }
-
-        if (seconds > 0) {
-          seconds--;
-        } else {
-          seconds = 59;
-          if (minutes > 0) {
-            minutes--;
-          } else {
-            minutes = 59;
-            if (hours > 0) {
-              hours--;
-            }
-          }
-        }
-
-        return { hours, minutes, seconds };
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+export function Timer({ hours, minutes, seconds }: TimerProps) {
   return (
     <span className="countdown font-mono text-xl">
+      <span style={{ "--value": hours } as CSSProperties} aria-live="polite" />
+      :
       <span
-        style={{ "--value": counter.hours } as CSSProperties}
+        style={{ "--value": minutes } as CSSProperties}
         aria-live="polite"
       />
       :
       <span
-        style={{ "--value": counter.minutes } as CSSProperties}
-        aria-live="polite"
-      />
-      :
-      <span
-        style={{ "--value": counter.seconds } as CSSProperties}
+        style={{ "--value": seconds } as CSSProperties}
         aria-live="polite"
       />
     </span>

@@ -57,7 +57,7 @@ export function OmrCard({
 
   return (
     <form
-      className="flex flex-col gap-3"
+      className="flex flex-col gap-4"
       onSubmit={handleSubmit(submitOmrCard, handleError)}
     >
       {categorizedQuestions.map((questions, categoryIndex) => (

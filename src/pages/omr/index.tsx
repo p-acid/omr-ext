@@ -1,12 +1,12 @@
 import { redirect } from "@tanstack/react-router";
 import { toast } from "sonner";
 
-import { Timer } from "@/components/timer";
 import { PAGE_ROUTES } from "@/constants/page-routes";
 import { SESSION_STORAGE_KEY } from "@/constants/storage-key";
 import type { OmrOptionsSchema } from "@/types/omr-options";
+
 import { OmrCard } from "./ui/omr-card";
-import { TimerIcon } from "lucide-react";
+import { OmrTimer } from "./ui/omr-timer";
 
 export function Omr() {
   const sessionOptions = window.sessionStorage.getItem(
@@ -27,10 +27,7 @@ export function Omr() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col items-center gap-8 px-6 py-9">
-      <div className="flex items-center gap-2">
-        <TimerIcon className="size-5" />
-        <Timer initialTime={initialTime} />
-      </div>
+      <OmrTimer initialTime={initialTime} />
       <OmrCard
         numberOfQuestions={omrOptions.numberOfQuestions}
         numberOfAnswers={omrOptions.numberOfAnswers}
