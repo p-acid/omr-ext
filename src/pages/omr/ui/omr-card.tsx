@@ -7,33 +7,45 @@ import {
 import { omrCardSchema, type OmrCardSchema } from "../types/omr-card-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { chunkArray } from "@/utils/chunk-array";
 
 interface OmrCardProps {
   numberOfQuestions: number;
   numberOfAnswers: number;
+  numberOfQuestionCategories: number;
 }
 
-export function OmrCard({ numberOfAnswers, numberOfQuestions }: OmrCardProps) {
+export function OmrCard({
+  numberOfAnswers,
+  numberOfQuestions,
+  numberOfQuestionCategories,
+}: OmrCardProps) {
   const initialQuestions = Array.from({ length: numberOfQuestions }).map(
     () => 0,
   );
 
+  const categorizedQuestions = chunkArray(
+    initialQuestions,
+    numberOfQuestionCategories,
+  );
+
   const { setValue, handleSubmit } = useForm<OmrCardSchema>({
-    defaultValues: { questionAnswers: initialQuestions },
+    defaultValues: { questionAnswers: categorizedQuestions },
     resolver: zodResolver(omrCardSchema),
   });
 
   const submitOmrCard: SubmitHandler<OmrCardSchema> = ({ questionAnswers }) => {
-    const answerSet = new Set(questionAnswers);
-
-    if (answerSet.has(0)) {
-      toast.error("You need to check answers.");
-      return;
-    }
-
     const copyText = questionAnswers
-      .map((answer, index) => `${index + 1}-${answer}\n`)
-      .join("");
+      .map((answers, categoryIndex) =>
+        answers
+          .map((answer, answerIndex) => {
+            const answerNumber =
+              categoryIndex * numberOfQuestionCategories + (answerIndex + 1);
+            return `${answerNumber}. ${answer}`;
+          })
+          .join(", "),
+      )
+      .join("\n");
 
     navigator.clipboard.writeText(copyText);
     toast.success("Coppied!");
@@ -48,16 +60,23 @@ export function OmrCard({ numberOfAnswers, numberOfQuestions }: OmrCardProps) {
       className="flex flex-col gap-3"
       onSubmit={handleSubmit(submitOmrCard, handleError)}
     >
-      <div className="border-neutral-content flex flex-col gap-1 border p-1">
-        {initialQuestions.map((_value, index) => (
-          <Question
-            key={index}
-            questionNumber={index + 1}
-            numberOfAnswers={numberOfAnswers}
-            setValue={setValue}
-          />
-        ))}
-      </div>
+      {categorizedQuestions.map((questions, categoryIndex) => (
+        <div
+          key={categoryIndex}
+          className="border-neutral-content flex flex-col gap-1 border p-1"
+        >
+          {questions.map((_value, questionIndex) => (
+            <Question
+              key={questionIndex}
+              categoryIndex={categoryIndex}
+              questionIndex={questionIndex}
+              numberOfAnswers={numberOfAnswers}
+              numberOfQuestionCategories={numberOfQuestionCategories}
+              setValue={setValue}
+            />
+          ))}
+        </div>
+      ))}
       <button type="submit" className="btn btn-primary">
         Copy Answers
       </button>
@@ -65,16 +84,22 @@ export function OmrCard({ numberOfAnswers, numberOfQuestions }: OmrCardProps) {
   );
 }
 
-interface QuestionProps extends Pick<OmrCardProps, "numberOfAnswers"> {
-  questionNumber: number;
+interface QuestionProps
+  extends Pick<OmrCardProps, "numberOfAnswers" | "numberOfQuestionCategories"> {
+  categoryIndex: number;
+  questionIndex: number;
   setValue: UseFormSetValue<OmrCardSchema>;
 }
 
 function Question({
-  questionNumber,
+  categoryIndex,
+  questionIndex,
   numberOfAnswers = 0,
+  numberOfQuestionCategories,
   setValue,
 }: QuestionProps) {
+  const questionNumber =
+    categoryIndex * numberOfQuestionCategories + (questionIndex + 1);
   return (
     <div className="border-neutral-content flex items-center border">
       <span className="text-neutral-content border-neutral-content flex h-[30px] w-7 items-center justify-center border-r text-xs tracking-tighter">
@@ -95,7 +120,7 @@ function Question({
                 className="radio radio-sm"
                 onChange={() => {
                   setValue(
-                    `questionAnswers.${questionNumber - 1}`,
+                    `questionAnswers.${categoryIndex}.${questionIndex}`,
                     answerNumber,
                   );
                 }}

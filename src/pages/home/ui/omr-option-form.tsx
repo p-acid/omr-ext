@@ -33,6 +33,7 @@ export function OmrOptionForm() {
         timeLimit: 60,
         numberOfQuestions: 40,
         numberOfAnswers: 5,
+        numberOfQuestionCategories: 0,
       };
 
   const navigate = useNavigate();
@@ -50,11 +51,13 @@ export function OmrOptionForm() {
     timeLimit,
     numberOfAnswers,
     numberOfQuestions,
+    numberOfQuestionCategories,
   }) => {
     const options = JSON.stringify({
       timeLimit,
       numberOfAnswers,
       numberOfQuestions,
+      numberOfQuestionCategories,
     });
 
     if (saveAsDefault) {
@@ -126,6 +129,20 @@ export function OmrOptionForm() {
             </option>
           ))}
         </select>
+      </fieldset>
+
+      <fieldset className="fieldset">
+        <legend className="fieldset-legend">
+          Number of Questions per Category
+        </legend>
+        <label className="input w-full">
+          <Hash className="size-4 opacity-50" />
+          <input
+            {...register("numberOfQuestionCategories", { valueAsNumber: true })}
+            type="number"
+            placeholder="If 0 is entered, categories are not distinguished"
+          />
+        </label>
       </fieldset>
 
       <button type="submit" className="btn btn-primary btn-md mt-2">

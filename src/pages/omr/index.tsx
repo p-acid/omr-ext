@@ -34,6 +34,7 @@ export function Omr() {
       <OmrCard
         numberOfQuestions={omrOptions.numberOfQuestions}
         numberOfAnswers={omrOptions.numberOfAnswers}
+        numberOfQuestionCategories={omrOptions.numberOfQuestionCategories}
       />
     </main>
   );
